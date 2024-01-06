@@ -19,7 +19,7 @@ def make_model(out_units: int) -> keras.models.Sequential:
 
 def compile_model(model: keras.models.Sequential) -> keras.models.Sequential:
     model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=1e-2),
+        optimizer=keras.optimizers.Adam(learning_rate=1e1),
         loss=keras.losses.CategoricalCrossentropy(from_logits=False),
         metrics=[
             "accuracy",

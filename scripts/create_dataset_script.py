@@ -17,6 +17,7 @@ def main():
     save_train_test_set(ds, "public_chip_cnn")
 
     ds = open_train_test_set("public_chip_cnn")
+    print(ds["shape"])
 
 
 if __name__ == "__main__":

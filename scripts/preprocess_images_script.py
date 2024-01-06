@@ -11,8 +11,8 @@ from preprocessing.image_preprocessing import (
 
 def main():
     images = convert_pkl_to_sar()
-    save_image_set(dnn_preprocessing(images), "pblc_trn_t72_bmp_btr_dnn")
-    ds = load_image_set("pblc_trn_t72_bmp_btr_dnn")
+    save_image_set(cnn_preprocessing(images), "pblc_tst_t72_bmp_btr_cnn")
+    ds = load_image_set("pblc_tst_t72_bmp_btr_cnn")
     print(np.unique(ds["labels"]))
     print(ds["data"].dtype)
     print(type(ds["data"]), type(ds["labels"]))

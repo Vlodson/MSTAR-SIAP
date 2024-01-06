@@ -1,23 +1,83 @@
+from abc import ABC, abstractmethod
+from typing import Dict
 import numpy as np
+import numpy.typing as npt
 
-from custom_types import ComplexMatrix, RealMatrix
+from custom_types import TrainTestSet, Dataset
 
 
-def normalize_complex_matrix(matrix: ComplexMatrix) -> ComplexMatrix:
+class Normalization(ABC):
+    def __init__(self, train_test_set: TrainTestSet) -> None:
+        super().__init__()
+
+        self.train_test_set: TrainTestSet = train_test_set
+        self.metadata: Dict[str, npt.NDArray]
+
+    @abstractmethod
+    def set_metadata(self) -> None:
+        pass
+
+    @abstractmethod
+    def normalize_single_set(self, single_set: Dataset) -> Dataset:
+        pass
+
+    def normalize(self) -> TrainTestSet:
+        self.set_metadata()
+        self.train_test_set["train"] = self.normalize_single_set(
+            self.train_test_set["train"]
+        )
+        self.train_test_set["test"] = self.normalize_single_set(
+            self.train_test_set["test"]
+        )
+
+        return self.train_test_set
+
+
+class ComplexSphericalNormalization(Normalization):
     """
-    Should normalize to max=1+0, min=-1+0, look up (x + iy) / |x + iy| in wolfram
+    Bounds each feature of the complex vector to a closed unit ball of the complex plane
     """
-    return matrix / np.absolute(matrix)
+
+    def set_metadata(self) -> None:
+        self.metadata = {
+            "max_magnitude": np.max(
+                np.absolute(self.train_test_set["train"]["data"]), axis=0
+            )
+        }
+
+    def normalize_single_set(self, single_set: Dataset) -> Dataset:
+        single_set["data"] /= self.metadata["max_magnitude"]
+        return single_set
 
 
-def normalize_real_matrix(matrix: RealMatrix) -> RealMatrix:
-    # for 2D matricies, normalizes per feature
-    return (matrix - matrix.min(axis=0)) / (matrix.max(axis=0) - matrix.min(axis=0))
+class ZScoreNormalization(Normalization):
+    def set_metadata(self) -> None:
+        self.metadata = {
+            "means": np.mean(self.train_test_set["train"]["data"], axis=0),
+            "deviations": np.std(self.train_test_set["train"]["data"], axis=0),
+        }
+
+    def normalize_single_set(self, single_set: Dataset) -> Dataset:
+        single_set["data"] = (
+            single_set["data"] - self.metadata["means"]
+        ) / self.metadata["deviations"]
+
+        return single_set
 
 
-def normalize_real_tensor(tensor: RealMatrix) -> RealMatrix:
-    # for 4D matricies, normalizes per channel
-    return (tensor - np.min(tensor, axis=(0, 1, 2), keepdims=True)) / (
-        np.max(tensor, axis=(0, 1, 2), keepdims=True)
-        - np.min(tensor, axis=(0, 1, 2), keepdims=True)
-    )
+class ImageNormalization(Normalization):
+    """
+    Per channel normalization for CNN SAR input
+    """
+
+    def set_metadata(self) -> None:
+        self.metadata = {
+            "max_magnitude": np.max(self.train_test_set["train"]["data"][..., 0]),
+            "max_phase": np.max(self.train_test_set["train"]["data"][..., 1]),
+        }
+
+    def normalize_single_set(self, single_set: Dataset) -> Dataset:
+        single_set["data"][..., 0] /= self.metadata["max_magnitude"]
+        single_set["data"][..., 1] /= self.metadata["max_phase"]
+
+        return single_set

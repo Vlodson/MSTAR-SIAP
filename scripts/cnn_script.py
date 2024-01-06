@@ -12,7 +12,7 @@ def main():
     model.fit(
         x=ds["train"]["data"],
         y=ds["train"]["labels"],
-        batch_size=128,
+        batch_size=64,
         epochs=100,
         verbose="auto",
         validation_split=0.2,
