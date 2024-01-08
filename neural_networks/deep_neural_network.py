@@ -16,9 +16,7 @@ def compile_model(model: keras.models.Sequential) -> keras.models.Sequential:
         optimizer=keras.optimizers.Adam(learning_rate=1e-2),
         loss=keras.losses.CategoricalCrossentropy(from_logits=False),
         metrics=[
-            "accuracy",
-            keras.metrics.Precision(),
-            keras.metrics.Recall(),
+            "categorical_accuracy",
             keras.metrics.F1Score(average="macro"),
         ],
     )
