@@ -1,7 +1,6 @@
 from typing import List, TypedDict, TypeAlias, Dict, Tuple
 import numpy.typing as npt
 import numpy as np
-from tensorflow import Tensor
 
 
 RealMatrix: TypeAlias = npt.NDArray[np.float32]

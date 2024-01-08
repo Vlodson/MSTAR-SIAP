@@ -44,7 +44,7 @@ def dnn_preprocessing(images: List[SARImage]) -> Dataset:
 
     Returns:
         - data in a tensor of row vectors
-        - labels in a tensor of one hot encoded vectors
+        - labels in a vector of categories
     """
     resized_images = resize_images(images)
 
@@ -53,19 +53,17 @@ def dnn_preprocessing(images: List[SARImage]) -> Dataset:
             [sar_image_to_dnn_datapoint(image) for image in resized_images]
         )
     )
-    dataset["data"] = dataset["data"]
-    dataset["labels"] = dataset["labels"]
 
     return dataset
 
 
 def cnn_preprocessing(images: List[SARImage]) -> Dataset:
     """
-    Preprocesses passed sar images for the deep neural network
+    Preprocesses passed sar images for the convolutional neural network
 
     Returns:
-        - data in a tensor of row vectors
-        - labels in a tensor of one hot encoded vectors
+        - data in a tensor of 2 channel images, first one being the magnitude and the second one being phase
+        - labels in a vector of categories
     """
     resized_images = resize_images(images)
 
@@ -74,9 +72,6 @@ def cnn_preprocessing(images: List[SARImage]) -> Dataset:
             [sar_image_to_cnn_datapoint(image) for image in resized_images]
         )
     )
-
-    dataset["data"] = dataset["data"]
-    dataset["labels"] = dataset["labels"]
 
     return dataset
 
