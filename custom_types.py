@@ -1,10 +1,7 @@
-from typing import List, TypedDict, TypeAlias, Dict, Tuple
+from typing import Dict, TypedDict
 import numpy.typing as npt
 import numpy as np
-
-
-RealMatrix: TypeAlias = npt.NDArray[np.float32]
-ComplexMatrix: TypeAlias = npt.NDArray[np.complex64]
+from tensorflow import Tensor
 
 
 class Header(TypedDict):
@@ -12,66 +9,54 @@ class Header(TypedDict):
     cols: int
     rows: int
     target: str
-    angle: str  # angle at which image was taken
+    angle: float  # SAR angle at which image was taken
+    azimuth: float  # angle of object on ground
     classification: str  # class after inference
 
 
-class SARImage(TypedDict):
+class Image(TypedDict):
     """
     Typed dict with keys for magnitude and phase seperately
     """
 
     header: Header
-    magnitude: RealMatrix
-    phase: RealMatrix
+    magnitude: npt.NDArray[np.float32]
+    phase: npt.NDArray[np.float32]
 
 
-class CSARImage(TypedDict):
-    """
-    Typed dict with key for complex valued image
-    """
-
-    header: Header
-    cimage: ComplexMatrix
-
-
-class DataPoint(TypedDict):
+class Datapoint(TypedDict):
+    image: npt.NDArray[np.float32]
     label: int
-    data: RealMatrix | ComplexMatrix
+
+
+class SingleSet(TypedDict):
+    data: npt.NDArray[np.float32]
+    labels: npt.NDArray[np.int32]
 
 
 class Dataset(TypedDict):
-    data: RealMatrix | ComplexMatrix
-    labels: RealMatrix
+    train: SingleSet
+    test: SingleSet
+    validation: SingleSet
 
 
-class TrainTestSet(TypedDict):
-    train: Dataset
-    test: Dataset
-    label_config: Dict[
-        int, int
-    ]  # maps labels from LABELS dict to new labels in train test set
-    dtype: type
-    shape: Tuple[int]
+class CSingleSet(TypedDict):
+    data: npt.NDArray[np.complex64]
+    labels: npt.NDArray[np.int32]
 
 
-class LoadDir(TypedDict):
-    load_path: str
-    save_path: str
+class CDataset(TypedDict):
+    train: CSingleSet
+    test: CSingleSet
+    validation: CSingleSet
+    label_config: Dict[int, int]
 
 
-class ImageLoaderConfig(TypedDict):
-    directories: List[LoadDir]
-
-
-class ImageReaderConfig(TypedDict):
-    directories: List[str]
-
-
-class IOConfig(TypedDict):
-    image_save_dir: str
-
-
-class DatasetLoaderConfig(TypedDict):
-    train_image_sets: List[str]
-    test_image_sets: List[str]
+class TFDataset(TypedDict):
+    train_data: Tensor
+    test_data: Tensor
+    validation_data: Tensor
+    train_labels: Tensor
+    test_labels: Tensor
+    validation_labels: Tensor
+    label_config: Dict[int, int]

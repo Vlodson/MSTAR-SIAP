@@ -1,0 +1,42 @@
+directories:
+  # test targets
+  # bmp2
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TEST/15_DEG/BMP2/SN_9563"
+    save_dir: "images/test/bmp2"
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TEST/15_DEG/BMP2/SN_9566"
+    save_dir: "images/test/bmp2"
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TEST/15_DEG/BMP2/SN_C21"
+    save_dir: "images/test/bmp2"
+
+  # btr70
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TEST/15_DEG/BTR70/SN_C71"
+    save_dir: "images/test/btr70"
+
+  # t72
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TEST/15_DEG/T72/SN_132"
+    save_dir: "images/test/t72"
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TEST/15_DEG/T72/SN_812"
+    save_dir: "images/test/t72"
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TEST/15_DEG/T72/SN_S7"
+    save_dir: "images/test/t72"
+
+  # train targets
+  # bmp2
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TRAIN/17_DEG/BMP2/SN_9563"
+    save_dir: "images/train/bmp2"
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TRAIN/17_DEG/BMP2/SN_9566"
+    save_dir: "images/train/bmp2"
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TRAIN/17_DEG/BMP2/SN_C21"
+    save_dir: "images/train/bmp2"
+
+  # btr70
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TRAIN/17_DEG/BTR70/SN_C71"
+    save_dir: "images/train/btr70"
+
+  # t72
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TRAIN/17_DEG/T72/SN_132"
+    save_dir: "images/train/t72"
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TRAIN/17_DEG/T72/SN_812"
+    save_dir: "images/train/t72"
+  - load_dir: "MSTAR/MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY/TARGETS/TRAIN/17_DEG/T72/SN_S7"
+    save_dir: "images/train/t72"

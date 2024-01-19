@@ -1,13 +1,8 @@
-## PERSONAL PART ##
-info.txt
-TODO.txt
-
 ## File/Folder Ignore ##
+datasets/*.pkl
+images/*
+!images/.gitkeep
 preprocessed_images/*.pkl
-!preprocessed_images/.gitignore
-
-train_test_sets/*.pkl
-!train_test_sets/.gitignore
 
 ## PyCharm stuff ##
 .idea/

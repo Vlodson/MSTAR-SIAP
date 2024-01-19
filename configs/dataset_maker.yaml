@@ -1,0 +1,9 @@
+train_set_datapoints: "train"
+test_set_datapoints: "test"
+
+validation_split: 0.2
+
+filter_labels:
+  - -1
+
+save_dir: datasets

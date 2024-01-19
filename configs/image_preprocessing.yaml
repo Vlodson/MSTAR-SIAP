@@ -1,0 +1,10 @@
+new_shape:
+  width: 50
+  height: 50
+
+label_mapper:
+  bmp2: 0
+  btr70: 1
+  t72: 2
+
+save_dir: preprocessed_images

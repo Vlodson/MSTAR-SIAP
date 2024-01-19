@@ -1,23 +1,27 @@
-from preprocessing.dataset_loader import open_train_test_set
-from preprocessing.utils.train_test_manipulation import make_tf_train_test_set
-from neural_networks.deep_neural_network import make_model, compile_model
+from neural_networks.dnn import make_model, compile_model
+from visualizations.model_history import plot_model_history
+from dataset_maker.dataset_makers import DNNDatasetMaker
 
 
 def main():
-    ds = open_train_test_set("public_chip_dnn")
-    ds = make_tf_train_test_set(ds)
+    dsm = DNNDatasetMaker()
+    dsm.create_dataset()
+    ds = dsm.make_neural_network_input()
 
-    model = compile_model(make_model(out_units=len(ds["label_config"])))
+    model = compile_model(make_model(len(dsm.label_config)))
 
-    model.fit(
-        x=ds["train"]["data"],
-        y=ds["train"]["labels"],
+    hist = model.fit(
+        x=ds["train_data"],
+        y=ds["train_labels"],
         batch_size=128,
         epochs=100,
         verbose="auto",
-        validation_split=0.2,
-        shuffle=False,
+        validation_data=(ds["validation_data"], ds["validation_labels"]),
+        shuffle=True,
+        use_multiprocessing=True,
     )
+
+    plot_model_history(hist)
 
 
 if __name__ == "__main__":

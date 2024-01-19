@@ -1,88 +1,74 @@
 import os
-import pickle as pkl
 from typing import List
-
-from custom_types import DataPoint, SARImage, Dataset
-from preprocessing.utils.datapoint_manipulation import (
-    csar_image_to_datapoint,
-    filter_unknown_labels,
-    sar_image_to_cnn_datapoint,
-    sar_image_to_dnn_datapoint,
-)
-from preprocessing.utils.image_manipulation import (
-    flatten_image,
-    resize_images,
-    sar_image_to_csar_image,
-)
-from preprocessing.utils.datapoint_manipulation import (
-    combine_datapoints,
-)
+import pickle as pkl
+import numpy as np
+import numpy.typing as npt
+from scipy.ndimage import rotate
+import tqdm
+from custom_types import Image, Datapoint
+from io_utils.loader import load_images_from_config
+from global_configs import DATA_PREPROCESSING
 
 
-def cvnn_preprocessing(images: List[SARImage]) -> Dataset:
-    """
-    Preprocesses passed sar images for the complex valued neural network
-
-    Returns:
-        - data in a 2D matrix of complex row vectors
-        - labels in a column vector of integers
-    """
-    resized_images = resize_images(images)
-
-    datapoints: List[DataPoint] = []
-    for image in resized_images:
-        csar = sar_image_to_csar_image(image)
-        csar["cimage"] = flatten_image(csar["cimage"])
-        datapoints.append(csar_image_to_datapoint(csar))
-
-    return combine_datapoints(filter_unknown_labels(datapoints))
+def rotate_image(
+    image: npt.NDArray[np.float32], angle: float
+) -> npt.NDArray[np.float32]:
+    # angle in degrees
+    return rotate(image, -angle)
 
 
-def dnn_preprocessing(images: List[SARImage]) -> Dataset:
-    """
-    Preprocesses passed sar images for the deep neural network
+def crop_center(
+    image: npt.NDArray[np.float32], new_height: int, new_width: int
+) -> npt.NDArray[np.float32]:
+    center = np.array(image.shape) // 2
+    x = center[1] - new_width // 2
+    y = center[0] - new_height // 2
 
-    Returns:
-        - data in a tensor of row vectors
-        - labels in a vector of categories
-    """
-    resized_images = resize_images(images)
+    return image[y : y + new_height, x : x + new_width]
 
-    dataset = combine_datapoints(
-        filter_unknown_labels(
-            [sar_image_to_dnn_datapoint(image) for image in resized_images]
+
+def preprocess_image(image: Image, new_height: int, new_width: int) -> Image:
+    for key in ["magnitude", "phase"]:
+        image[key] = crop_center(
+            rotate_image(image[key], image["header"]["azimuth"]), new_height, new_width
         )
-    )
+    image["header"]["rows"] = new_height
+    image["header"]["cols"] = new_width
 
-    return dataset
+    return image
 
 
-def cnn_preprocessing(images: List[SARImage]) -> Dataset:
-    """
-    Preprocesses passed sar images for the convolutional neural network
+def map_label(label: str) -> int:
+    try:
+        key = [k for k in DATA_PREPROCESSING["label_mapper"] if k in label][0]
+    except IndexError:
+        return -1
 
-    Returns:
-        - data in a tensor of 2 channel images, first one being the magnitude and the second one being phase
-        - labels in a vector of categories
-    """
-    resized_images = resize_images(images)
+    return DATA_PREPROCESSING["label_mapper"][key]
 
-    dataset = combine_datapoints(
-        filter_unknown_labels(
-            [sar_image_to_cnn_datapoint(image) for image in resized_images]
+
+def datapoint_from_image(image: Image) -> Datapoint:
+    return {
+        "image": np.stack([image["magnitude"], image["phase"]], axis=-1),
+        "label": map_label(image["header"]["target"]),
+    }
+
+
+def datapoints_from_config() -> List[Datapoint]:
+    images = load_images_from_config()
+
+    return [
+        datapoint_from_image(
+            preprocess_image(
+                img,
+                DATA_PREPROCESSING["new_shape"]["height"],
+                DATA_PREPROCESSING["new_shape"]["width"],
+            )
         )
-    )
-
-    return dataset
-
-
-def save_image_set(dataset: Dataset, name: str) -> None:
-    with open(os.path.join("preprocessed_images", name + ".pkl"), "wb") as _f:
-        pkl.dump(dataset, _f)
+        for img in tqdm.tqdm(images)
+    ]
 
 
-def load_image_set(name: str) -> Dataset:
-    with open(os.path.join("preprocessed_images", name + ".pkl"), "rb") as _f:
-        dataset = pkl.load(_f)
-
-    return dataset
+def save_datapoints(datapoints: List[Datapoint], name: str) -> None:
+    with open(os.path.join(DATA_PREPROCESSING["save_dir"], name + ".pkl"), "wb") as _f:
+        pkl.dump(datapoints, _f)

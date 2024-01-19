@@ -1,7 +1,0 @@
-# preprocessed images that will be used for training
-train_image_sets:
-  - "pblc_trn_t72_bmp_btr_cnn"
-
-# preprocessed images that will be used for testing
-test_image_sets:
-  - "pblc_tst_t72_bmp_btr_cnn"
